@@ -28,11 +28,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # Use your actual URL here
-# DATABASE_URL = "postgresql+psycopg2://postgres:Suraj_30112002@db.bqghunzqudzmsmnvnsvh.supabase.co:5432/postgres" 
-DATABASE_URL = "postgresql+psycopg2://postgres:Suraj_30112002@db.bqghunzqudzmsmnvnsvh.supabase.co:6543/postgres"
+DATABASE_URL = "postgresql+psycopg2://postgres:Suraj_30112002@db.bqghunzqudzmsmnvnsvh.supabase.co:5432/postgres" 
 
 
-# postgresql://postgres:[YOUR-PASSWORD]@db.bqghunzqudzmsmnvnsvh.supabase.co:5432/postgres
+
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
