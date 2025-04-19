@@ -42,20 +42,90 @@
 #         "message": "Registration successful!"
 #     })
 
+#--------------------------------------------------------
 
+# from fastapi import FastAPI, Request, Form
+# from fastapi.templating import Jinja2Templates
+# from fastapi.responses import HTMLResponse
+# from database import SessionLocal, engine
+# from models import Base, User
 
-from fastapi import FastAPI, Request, Form
+# # Create tables in the database
+# Base.metadata.create_all(bind=engine)
+
+# app = FastAPI()
+# templates = Jinja2Templates(directory="templates")
+
+# @app.get("/", response_class=HTMLResponse)
+# async def get_form(request: Request):
+#     return templates.TemplateResponse("register.html", {"request": request})
+
+# @app.post("/register", response_class=HTMLResponse)
+# async def register_user(
+#     request: Request,
+#     name: str = Form(...),
+#     age: int = Form(...),
+#     contact: str = Form(...),
+#     email: str = Form(...),
+#     pr_10: float = Form(...),
+#     pr_12: float = Form(...),
+#     graduation_gpa: float = Form(...)
+#                                             ):
+
+#     db = SessionLocal()
+#     try:
+#         new_user = User(
+#             name=name,
+#             age=age,
+#             contact=contact,
+#             email=email,
+#             pr_10=pr_10,
+#             pr_12=pr_12,
+#             graduation_gpa=graduation_gpa
+#         )
+#         db.add(new_user)
+#         db.commit()
+#         message = "Registration successful!"
+#     except Exception as e:
+#         db.rollback()
+#         print("❌ DB ERROR:", e)
+#         message = f"Registration failed: {e}"
+#     finally:
+#         db.close()
+
+#     return templates.TemplateResponse("register.html", {
+#         "request": request,
+#         "message": message
+#     })
+
+#--------------------------------------------------------------
+
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from database import SessionLocal, engine
-from models import Base, User
-
-# Create tables in the database
-Base.metadata.create_all(bind=engine)
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import SessionLocal, engine, Base
+from models import User
+import os
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+# Async DB initialization
+async def init_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+@app.on_event("startup")
+async def startup():
+    await init_db()
+
+# Dependency
+async def get_db():
+    async with SessionLocal() as session:
+        yield session
+
+# Routes (now async)
 @app.get("/", response_class=HTMLResponse)
 async def get_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
@@ -69,31 +139,24 @@ async def register_user(
     email: str = Form(...),
     pr_10: float = Form(...),
     pr_12: float = Form(...),
-    graduation_gpa: float = Form(...)
-                                            ):
-
-    db = SessionLocal()
+    graduation_gpa: float = Form(...),
+    db: AsyncSession = Depends(get_db)  # Async session
+):
     try:
         new_user = User(
-            name=name,
-            age=age,
-            contact=contact,
-            email=email,
-            pr_10=pr_10,
-            pr_12=pr_12,
+            name=name, age=age, contact=contact,
+            email=email, pr_10=pr_10, pr_12=pr_12,
             graduation_gpa=graduation_gpa
         )
         db.add(new_user)
-        db.commit()
-        message = "Registration successful!"
+        await db.commit()  # Async commit
+        message = "✅ Registration successful!"
     except Exception as e:
-        db.rollback()
-        print("❌ DB ERROR:", e)
-        message = f"Registration failed: {e}"
-    finally:
-        db.close()
-
+        await db.rollback()  # Async rollback
+        message = f"❌ Error: {str(e)}"
+    
     return templates.TemplateResponse("register.html", {
         "request": request,
         "message": message
     })
+
