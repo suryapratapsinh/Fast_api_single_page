@@ -39,6 +39,22 @@
 
 #------------------------------------------------------------
 
+# Get from environment variables (never hardcode!)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Force async driver and SSL
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable not set")
+
+# Convert to asyncpg format if needed
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+
+# Ensure SSL is required
+if "sslmode" not in DATABASE_URL:
+    DATABASE_URL += "?sslmode=require"
+
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
@@ -47,18 +63,25 @@ import os
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # 2. Force SSL and correct driver format
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+# if DATABASE_URL.startswith("postgres://"):
+#     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
     
-if "sslmode" not in DATABASE_URL:
-    DATABASE_URL += "?sslmode=require"
+# if "sslmode" not in DATABASE_URL:
+#     DATABASE_URL += "?sslmode=require"
+
+# Remove sslmode from URL and handle it separately
+if DATABASE_URL and "sslmode" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.split("?")[0]  # Remove query params
 
 # 3. Async engine with connection pooling
 engine = create_async_engine(
     DATABASE_URL,
-    pool_pre_ping=True,  # Reconnects if DB drops
-    pool_size=5,         # Enough for small traffic
-    echo=True            # Debug only - disable later
+    connect_args={
+        "ssl": "require"  # Correct way for asyncpg
+    },
+    pool_pre_ping=True,
+    pool_size=5,
+    echo=True  # For debugging, remove in production
 )
 
 # 4. Async session maker
