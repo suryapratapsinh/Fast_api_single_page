@@ -111,7 +111,6 @@ import os
 
 load_dotenv() 
 
-database_url = os.getenv("DATABASE_URL")
 
 
 app = FastAPI()
