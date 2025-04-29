@@ -106,7 +106,13 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import SessionLocal, engine, Base
 from models import User
+from dotenv import load_dotenv
 import os
+
+load_dotenv() 
+
+database_url = os.getenv("DATABASE_URL")
+
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
