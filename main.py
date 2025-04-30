@@ -108,10 +108,12 @@ from database import SessionLocal, engine, Base
 from models import User
 # from dotenv import load_dotenv
 import os
+import logging 
 
 # load_dotenv() 
 
-
+logging.basicConfig(level=logging.INFO)
+print("DATABASE_URL:", os.getenv("DATABASE_URL"))
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
