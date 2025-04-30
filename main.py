@@ -106,10 +106,10 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import SessionLocal, engine, Base
 from models import User
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import os
 
-load_dotenv() 
+# load_dotenv() 
 
 
 
