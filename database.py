@@ -92,39 +92,54 @@
 # )
 
 # Base = declarative_base()
-#----------------------------------------
+#-----------------------------------------======================================++++++++++++++++++++++++++++++++++++++++++++++
 
-import os  # THIS IS THE CRITICAL MISSING IMPORT
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
+# import os  # THIS IS THE CRITICAL MISSING IMPORT
+# from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+# from sqlalchemy.orm import sessionmaker, declarative_base
 
-# Get from environment variables
+# # Get from environment variables
+# DATABASE_URL = os.getenv("DATABASE_URL")
+
+# # Convert to asyncpg format if needed
+# if DATABASE_URL.startswith("postgres://"):
+#     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+
+# # Async engine with SSL
+# engine = create_async_engine(
+#     DATABASE_URL,
+#     connect_args={
+#         "ssl": "require"  # Correct SSL for asyncpg
+#     },
+#     pool_pre_ping=True,
+#     pool_size=5
+# )
+
+# SessionLocal = sessionmaker(
+#     bind=engine,
+#     class_=AsyncSession,
+#     expire_on_commit=False
+# )
+
+# Base = declarative_base()
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Convert to asyncpg format if needed
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+# ✅ Create sync engine
+engine = create_engine(DATABASE_URL)
 
-# Async engine with SSL
-engine = create_async_engine(
-    DATABASE_URL,
-    connect_args={
-        "ssl": "require"  # Correct SSL for asyncpg
-    },
-    pool_pre_ping=True,
-    pool_size=5
-)
+# ✅ Create session
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-SessionLocal = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
-
+# ✅ Base class for models
 Base = declarative_base()
-
-
-
 
 
 
