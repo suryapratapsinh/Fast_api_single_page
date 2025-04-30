@@ -176,20 +176,16 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine, Base
 from models import User
 import os
-import logging
-
-logging.basicConfig(level=logging.INFO)
-print("DATABASE_URL:", os.getenv("DATABASE_URL"))
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
-# ✅ Sync DB initialization
+# Create tables on startup (sync)
 @app.on_event("startup")
-def startup():
+def startup_event():
     Base.metadata.create_all(bind=engine)
 
-# ✅ Sync DB dependency
+# Dependency for getting DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -197,7 +193,7 @@ def get_db():
     finally:
         db.close()
 
-# ✅ Routes (no async now)
+# Routes
 @app.get("/", response_class=HTMLResponse)
 def get_form(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
@@ -212,23 +208,28 @@ def register_user(
     pr_10: float = Form(...),
     pr_12: float = Form(...),
     graduation_gpa: float = Form(...),
-    db: Session = Depends(get_db)  # ✅ Use sync Session
+    db: Session = Depends(get_db)
 ):
     try:
         new_user = User(
-            name=name, age=age, contact=contact,
-            email=email, pr_10=pr_10, pr_12=pr_12,
+            name=name,
+            age=age,
+            contact=contact,
+            email=email,
+            pr_10=pr_10,
+            pr_12=pr_12,
             graduation_gpa=graduation_gpa
         )
         db.add(new_user)
-        db.commit()  # ✅ Sync commit
+        db.commit()
         message = "✅ Registration successful!"
     except Exception as e:
-        db.rollback()  # ✅ Sync rollback
+        db.rollback()
         message = f"❌ Error: {str(e)}"
 
     return templates.TemplateResponse("register.html", {
         "request": request,
         "message": message
     })
+
 
