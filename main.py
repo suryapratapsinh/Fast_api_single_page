@@ -200,29 +200,32 @@ def get_form(request: Request):
 
 @app.post("/register", response_class=HTMLResponse)
 def register_user(
-    request: Request,
-    name: str = Form(...),
-    age: int = Form(...),
-    contact: str = Form(...),
-    email: str = Form(...),
-    pr_10: float = Form(...),
-    pr_12: float = Form(...),
-    graduation_gpa: float = Form(...),
-    db: Session = Depends(get_db)
+    Full_Name: str = Form(...),
+    Email: str = Form(...),
+    Phone: int = Form(...),
+    Country_of_Interest: str = Form(...),
+    Preferred_Intake: str = Form(...),
+    Highest_Qualification: str = Form(...),
+    IELTS_TOEFL_Score: str = Form(...),
+    Message: str = Form(...),
+    db:  Session = Depends(get_db)
+
 ):
     try:
         new_user = User(
-            name=name,
-            age=age,
-            contact=contact,
-            email=email,
-            pr_10=pr_10,
-            pr_12=pr_12,
-            graduation_gpa=graduation_gpa
+            Full_Name=Full_Name,
+            Email=Email,
+            Phone=Phone,
+            Country_of_Interest=Country_of_Interest,
+            Preferred_Intake=Preferred_Intake,
+            Highest_Qualification=Highest_Qualification,
+            IELTS_TOEFL_Score = IELTS_TOEFL_Score,
+            Message = Message
         )
         db.add(new_user)
         db.commit()
         message = "✅ Registration successful!"
+        
     except Exception as e:
         db.rollback()
         message = f"❌ Error: {str(e)}"
