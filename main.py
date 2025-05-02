@@ -225,7 +225,8 @@ def register_user(
         )
         db.add(new_user)
         db.commit()
-        message = "✅ Registration successful!"
+        db.close()
+
         
     except Exception as e:
         db.rollback()
@@ -233,7 +234,7 @@ def register_user(
 
     return templates.TemplateResponse("success.html", {
         "request": request,
-        "message": message
+        "message": "✅ Registration successful!"
     })
 
 
