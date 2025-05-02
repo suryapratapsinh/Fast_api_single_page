@@ -231,7 +231,7 @@ def register_user(
         db.rollback()
         message = f"❌ Error: {str(e)}"
 
-    return templates.TemplateResponse("register.html", {
+    return templates.TemplateResponse("success.html", {
         "request": request,
         "message": message
     })
