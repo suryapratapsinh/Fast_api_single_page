@@ -200,6 +200,7 @@ def get_form(request: Request):
 
 @app.post("/register", response_class=HTMLResponse)
 def register_user(
+     request: Request,
     Full_Name: str = Form(...),
     Email: str = Form(...),
     Phone: int = Form(...),
