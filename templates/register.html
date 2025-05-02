@@ -1,24 +1,136 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Registration Form</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>Student Inquiry Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #dbeafe, #e0f2fe);
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-top: 5px;
+            font-size: 1em;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            background-color: #1d4ed8;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+        }
+
+        .submit-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .message {
+            text-align: center;
+            color: green;
+            margin-top: 10px;
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 500px) {
+            .form-container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.25em;
+            }
+
+            label,
+            input,
+            textarea,
+            .submit-btn {
+                font-size: 0.95em;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h2>User Registration</h2>
-    <form method="post" action="/register">
-        Name: <input type="text" name="name" required><br><br>
-        Age: <input type="number" name="age" required><br><br>
-        Contact: <input type="text" name="contact" required><br><br>
-        Email: <input type="email" name="email" required><br><br>
-        10th %: <input type="number" step="0.01" name="pr_10" required><br><br>
-        12th %: <input type="number" step="0.01" name="pr_12" required><br><br>
-        Graduation GPA: <input type="number" step="0.01" name="graduation_gpa" required><br><br>
+    <div class="wrapper">
+        <div class="form-container">
+            <h2>Student Inquiry Form</h2>
 
-        <button type="submit">Register</button>
-    </form>
+            {% if message %}
+            <p class="message">{{ message }}</p>
+            {% endif %}
 
-    {% if message %}
-        <p style="color:green;">{{ message }}</p>
-    {% endif %}
+            <form method="post" action="/register">
+                <label>Full Name:</label>
+                <input type="text" name="Full_Name" required>
+
+                <label>Email:</label>
+                <input type="email" name="Email" required>
+
+                <label>Phone:</label>
+                <input type="text" name="Phone" required>
+
+                <label>Country of Interest:</label>
+                <input type="text" name="Country_of_Interest" required>
+
+                <label>Preferred Intake:</label>
+                <input type="text" name="Preferred_Intake">
+
+                <label>Highest Qualification:</label>
+                <input type="text" name="Highest_Qualification">
+
+                <label>IELTS/TOEFL Score:</label>
+                <input type="number" step="0.1" name="IELTS_TOEFL_Score">
+
+                <label>Message:</label>
+                <textarea name="Message" rows="4"></textarea>
+
+                <input class="submit-btn" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
 </body>
 </html>
